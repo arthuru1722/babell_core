@@ -1,0 +1,36 @@
+IGDB
+
+[x] sincronização inicial
+[x] update geral
+[x] dicionario keywords
+[x] dicionario genres
+[x] dicionario companies
+[x] dicionario themes
+[x] dicionario language
+[x] trocar de onde ta pegando a nota (pegar do proprio igdb em vez de externo ou os dois e priorizar em guardar so um deles)
+[x] refatorar a função principal de busca. /utils/pipeline é o futuro. amem
+[x] improve search (fazer pesquisa extra em cada um (individual) para os alternative_names)
+[x] dicionario involved_compaines
+[x] dicionario language_support_type
+[x] função pra atualizar todos os dados extras de vez (não principal)
+[z] reorganizar os diretorios e refatorar o codigo no geral
+[x] remover tudo relacionado a game_engines, nem faz sentido ter isso tlgd
+
+[] função pra pegar o authorization da twitch
+
+
+flaresolverr
+
+[] mudar de /{name}/{name}.json para /{name}.json
+
+steamAPI
+
+[] começar a olhar como a api funciona
+
+RAWG
+
+[] começar a olhar como a api funciona
+
+geral
+
+[] Implementar um huby.toml no config dirs
