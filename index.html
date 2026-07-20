@@ -137,7 +137,10 @@
                 const summary = game.summary || game.storyline || 'Nenhuma descrição disponível para este título.';
 
                 const cardHtml = `
-                    <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden shadow-lg hover:border-indigo-500/50 hover:shadow-indigo-500/10 transition-all flex flex-col group">
+                    <div 
+                        onclick="openGame('${encodeURIComponent(game.name)}', '${encodeURIComponent(game.cover_url ?? "")}')"
+                        class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden shadow-lg hover:border-indigo-500/50 hover:shadow-indigo-500/10 transition-all flex flex-col group cursor-pointer"
+                    >
                         <div class="relative aspect-[3/4] w-full overflow-hidden bg-gray-800">
                             <img 
                                 src="${cover}" 
@@ -214,6 +217,11 @@
             currentPage++;
             fetchGames();
         });
+
+        function openGame(name, cover) {
+            window.location.href =
+                `game.html?name=${name}&cover=${cover}`;
+        }
 
         // Inicialização: Busca a primeira leva de jogos ao carregar a página
         document.addEventListener('DOMContentLoaded', () => {
