@@ -5,10 +5,10 @@ edition = "2024"
 
 [dependencies]
 reqwest = { version = "0.13.4", features = ["json"] }
-tokio = { version = "1", features = ["full"] }
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
+tokio = { version = "1.53.1", features = ["full"] }
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.151"
 directories = "6.0.0"
 scraper = "0.27.0"
-rusqlite = { version = "0.31", features = ["bundled"] }
+rusqlite = { version = "0.40.1", features = ["bundled"] }
 futures = "0.3"
