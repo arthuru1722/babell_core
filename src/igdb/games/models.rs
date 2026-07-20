@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct IgdbGameCover {
     pub id: i64,
-    pub url: String,
+    pub image_id: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

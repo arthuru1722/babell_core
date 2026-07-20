@@ -17,7 +17,9 @@ IGDB
 [x] remover tudo relacionado a game_engines, nem faz sentido ter isso tlgd
 [x] função pra pegar o authorization da twitch
 
-[] read igdb/database/
+[x] read igdb/database/
+
+
 
 flaresolverr
 

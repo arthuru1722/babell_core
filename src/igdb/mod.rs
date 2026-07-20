@@ -5,3 +5,5 @@ pub mod pipeline;
 pub mod search_improve;
 
 pub mod auth;
+
+pub mod database;

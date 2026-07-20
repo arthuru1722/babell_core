@@ -1,0 +1,224 @@
+<!-- IA generated test -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Jogos - Babel Core</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        /* Fallback básico para imagens de capa quebradas ou ausentes */
+        .cover-placeholder {
+            background: linear-gradient(135deg, #1f2937, #111827);
+        }
+    </style>
+</head>
+<body class="bg-gray-950 text-gray-100 min-h-screen font-sans">
+
+    <header class="border-b border-gray-800 bg-gray-900/50 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <h1 class="text-2xl font-bold tracking-tight text-indigo-400">
+                🎮 Babel<span class="text-white font-light">Catalog</span>
+            </h1>
+            
+            <div class="relative w-full sm:w-96">
+                <input 
+                    type="text" 
+                    id="search-input" 
+                    placeholder="Buscar jogos por nome..." 
+                    class="w-full bg-gray-800 text-white pl-4 pr-10 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-indigo-500 transition-colors"
+                >
+                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-400">
+                    🔍
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        
+        <div id="status-message" class="text-center py-12 text-gray-400 hidden">
+            <div class="animate-spin inline-block w-8 h-8 border-[3px] border-current border-t-transparent text-indigo-500 rounded-full mb-4"></div>
+            <p>Carregando catálogo de jogos...</p>
+        </div>
+
+        <div id="games-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            </div>
+        
+        <div class="flex justify-center items-center gap-4 mt-8">
+            <button
+                id="prev-page"
+                class="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+                ← Anterior
+            </button>
+
+            <span id="page-info" class="text-gray-300">
+                Página 1
+            </span>
+
+            <button
+                id="next-page"
+                class="px-4 py-2 bg-indigo-600 rounded-lg hover:bg-indigo-500"
+            >
+                Próxima →
+            </button>
+        </div>
+    </main>
+
+    <script>
+        const API_BASE_URL = 'http://127.0.0.1:3000';
+        const gamesGrid = document.getElementById('games-grid');
+        const searchInput = document.getElementById('search-input');
+        const statusMessage = document.getElementById('status-message');
+
+        const prevButton = document.getElementById('prev-page');
+        const nextButton = document.getElementById('next-page');
+        const pageInfo = document.getElementById('page-info');
+
+        const PAGE_SIZE = 20;
+
+        let currentPage = 0;
+        let currentSearch = "";
+
+        // Função para buscar dados da API
+        async function fetchGames() {
+            showLoading(true);
+
+            const offset = currentPage * PAGE_SIZE;
+
+            const endpoint = currentSearch.length
+                ? `/games/search?q=${encodeURIComponent(currentSearch)}&limit=${PAGE_SIZE}&offset=${offset}`
+                : `/games?limit=${PAGE_SIZE}&offset=${offset}`;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}${endpoint}`);
+
+                if (!response.ok)
+                    throw new Error("Erro na resposta do servidor");
+
+                const games = await response.json();
+
+                renderGames(games);
+
+                pageInfo.textContent = `Página ${currentPage + 1}`;
+
+                prevButton.disabled = currentPage === 0;
+
+                nextButton.disabled = games.length < PAGE_SIZE;
+            } catch (error) {
+                console.error(error);
+                renderError();
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Renderiza o Grid de Cards
+        function renderGames(games) {
+            gamesGrid.innerHTML = '';
+            
+            if (games.length === 0) {
+                gamesGrid.innerHTML = `
+                    <div class="col-span-full text-center py-12 text-gray-500">
+                        Nenhum jogo encontrado.
+                    </div>
+                `;
+                return;
+            }
+
+            games.forEach(game => {
+                // Formata notas e metadados com fallbacks caso venham nulos do SQLite
+                const rating = game.rating ? game.rating.toFixed(1) : 'N/A';
+                const releaseYear = game.release_date ? new Date(game.release_date * 1000).getFullYear() : 'S/D';
+                const cover = game.cover_url
+                    ? `https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover_url}.webp`
+                    : 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=400';
+                const summary = game.summary || game.storyline || 'Nenhuma descrição disponível para este título.';
+
+                const cardHtml = `
+                    <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden shadow-lg hover:border-indigo-500/50 hover:shadow-indigo-500/10 transition-all flex flex-col group">
+                        <div class="relative aspect-[3/4] w-full overflow-hidden bg-gray-800">
+                            <img 
+                                src="${cover}" 
+                                alt="${game.name}" 
+                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                onerror="this.src='https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=400'"
+                            >
+                            <div class="absolute top-3 right-3 bg-gray-950/80 backdrop-blur text-yellow-400 text-xs font-bold px-2 py-1 rounded border border-yellow-500/30">
+                                ⭐ ${rating}
+                            </div>
+                        </div>
+
+                        <div class="p-4 flex flex-col flex-grow">
+                            <span class="text-xs font-semibold text-indigo-400 mb-1">${releaseYear}</span>
+                            <h2 class="text-lg font-bold text-white line-clamp-1 mb-2 group-hover:text-indigo-300 transition-colors">
+                                ${game.name}
+                            </h2>
+                            <p class="text-xs text-gray-400 line-clamp-3 flex-grow mb-4">
+                                ${summary}
+                            </p>
+                            <div class="text-[10px] text-gray-500 border-t border-gray-800 pt-2 flex justify-between">
+                                <span>ID: #${game.game_id}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                gamesGrid.insertAdjacentHTML('beforeend', cardHtml);
+            });
+        }
+
+        // Controla o estado de Loading
+        function showLoading(isLoading) {
+            if (isLoading) {
+                statusMessage.classList.remove('hidden');
+                gamesGrid.classList.add('opacity-40');
+            } else {
+                statusMessage.classList.add('hidden');
+                gamesGrid.classList.remove('opacity-40');
+            }
+        }
+
+        // Exibe erro de conexão
+        function renderError() {
+            gamesGrid.innerHTML = `
+                <div class="col-span-full text-center py-12 text-red-400 bg-red-950/20 border border-red-900/50 rounded-xl">
+                    ⚠️ Não foi possível conectar ao servidor backend em <strong>${API_BASE_URL}</strong>.<br>
+                    <span class="text-sm text-gray-400">Verifique se a sua API em Rust está rodando.</span>
+                </div>
+            `;
+        }
+
+        // Escuta o input de busca com Debounce simples de 300ms
+        let debounceTimer;
+
+        searchInput.addEventListener("input", (e) => {
+            clearTimeout(debounceTimer);
+
+            debounceTimer = setTimeout(() => {
+                currentSearch = e.target.value.trim();
+                currentPage = 0;
+                fetchGames();
+            }, 300);
+        });
+
+        prevButton.addEventListener("click", () => {
+            if (currentPage === 0)
+                return;
+
+            currentPage--;
+            fetchGames();
+        });
+
+        nextButton.addEventListener("click", () => {
+            currentPage++;
+            fetchGames();
+        });
+
+        // Inicialização: Busca a primeira leva de jogos ao carregar a página
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchGames();
+        });
+    </script>
+</body>
+</html>

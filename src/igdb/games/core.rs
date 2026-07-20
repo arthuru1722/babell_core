@@ -33,13 +33,13 @@ pub async fn sync_games(client_id: &str, access_token: &str) -> Result<(), DynEr
             updated_at = excluded.updated_at;";
 
     let extra_where =
-        "external_games.external_game_source = (1) & cover.url != null & game_type = (0,8,9)";
+        "external_games.external_game_source = (1, 11) & cover.image_id != null & game_type = (0,8,9)";
 
     run_sync_pipeline::<IgdbGame, _>(
         client_id,
         access_token,
         "games",
-        "name, cover.url, first_release_date, rating, aggregated_rating, updated_at",
+        "name, cover.image_id, first_release_date, rating, aggregated_rating, updated_at",
         "games",
         table_sql,
         insert_sql,
@@ -48,7 +48,7 @@ pub async fn sync_games(client_id: &str, access_token: &str) -> Result<(), DynEr
             vec![
                 Box::new(item.id),
                 Box::new(item.name.clone()),
-                Box::new(item.cover.as_ref().map(|c| c.url.clone())),
+                Box::new(item.cover.as_ref().map(|c| c.image_id.clone())),
                 Box::new(item.first_release_date),
                 Box::new(item.rating),
                 Box::new(item.aggregated_rating),
