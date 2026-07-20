@@ -15,9 +15,9 @@ IGDB
 [x] função pra atualizar todos os dados extras de vez (não principal)
 [z] reorganizar os diretorios e refatorar o codigo no geral
 [x] remover tudo relacionado a game_engines, nem faz sentido ter isso tlgd
+[x] função pra pegar o authorization da twitch
 
-[] função pra pegar o authorization da twitch
-
+[] read igdb/database/
 
 flaresolverr
 
